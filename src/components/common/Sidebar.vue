@@ -78,6 +78,10 @@ export default {
                   {
                     index: 'Spname',
                     title: '商品管理'
+                  },
+                  {
+                    index: 'Spshu',
+                    title: '商品属性'
                   }
                   ]
               },

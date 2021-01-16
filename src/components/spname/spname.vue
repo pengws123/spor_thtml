@@ -224,7 +224,7 @@
         },
         //新增的方法
         saveForm:function () {
-          this.$refs['addCar'].validate(res=>{
+          this.$refs['addData'].validate(res=>{
             if(res==true){
               console.log(this.addData)
               this.$ajax.post("http://localhost:8080/api/name/savespname",this.$qs.stringify(this.addData)).then(rs=>{

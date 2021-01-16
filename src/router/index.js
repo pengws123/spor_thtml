@@ -37,6 +37,11 @@ export default new Router({
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/spname/spname.vue'),
           meta: { title: '商品管理' }
         }
+        ,{
+          path: '/Spshu',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/spshuxing/SpShu.vue'),
+          meta: { title: '商品属性' }
+        }
       ]
     }
   ]
