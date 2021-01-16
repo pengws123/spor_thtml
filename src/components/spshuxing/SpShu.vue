@@ -99,21 +99,62 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="SKU" prop="isSKU">
-          <el-switch
-            v-model="addData.isSKU"
-            active-text="是"
-            active-color="#13ce66"
-            :active-value="1"
-            inactive-text="否"
-            :inactive-value="0">
-          </el-switch>
+        <el-form-item label="类型:" prop="isSKU">
+          <el-radio-group v-model="addData.isSKU">
+            <el-radio   :label="1">是</el-radio>
+            <el-radio   :label="2">否</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="saveForm">确 定</el-button>
         <el-button @click="addForm = false">取 消</el-button>
       </div>
+    </el-dialog>
+  </div>
+  <!-- 修改  -->
+  <div>
+    <el-dialog title="商品信息" :visible.sync="upForm">
+      <el-form :model="upDate" ref="upDate" :rules="rule"  label-width="80px">
+
+        <el-form-item label="英文名称" prop="name">
+          <el-input v-model="upDate.name" autocomplete="off" ></el-input>
+        </el-form-item>
+        <el-form-item label="中文名称" prop="nameCH">
+          <el-input v-model="upDate.nameCH" autocomplete="off" ></el-input>
+        </el-form-item>
+        <el-form-item label="属性类型" prop="typeId">
+          <el-select v-model="upDate.typeId" placeholder="请选择">
+            <el-option
+              v-for="item in bandData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="upDate.type" placeholder="请选择">
+            <el-option
+              v-for="item in leixngData"
+              :key="item.type"
+              :label="item.name"
+              :value="item.type">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型:" prop="isSKU">
+          <el-radio-group v-model="upDate.isSKU">
+            <el-radio   :label="1">是</el-radio>
+            <el-radio   :label="2">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="upForm = false">取 消</el-button>
+        <el-button type="primary" @click="updateForm">确 定</el-button>
+      </div>
+
     </el-dialog>
   </div>
 </div>
@@ -130,6 +171,17 @@
               sizes:[2,3,5],
               size:2,
               start:1
+            },
+            //修改弹框
+            upForm:false,
+            //修改的对象
+            upDate:{
+              id:"",
+              name:"",
+              nameCH:"",
+              typeId:"",
+              type:"",
+              isSKU:""
             },
             //总条数
             count:0,
@@ -181,6 +233,21 @@
           this.$ajax.post(url).then(rs=>{
             location.reload();
           }).catch(er=>console.log(er))
+        },
+        //修改的弹框
+        showupdate:function (index,row) {
+          this.upForm=true;
+          var url="http://localhost:8080/api/perpor/selectById?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            this.upDate=rs.data.data;
+          }).catch(er=>console.log(er))
+        },
+        //修改提交
+        updateForm:function () {
+          this.$ajax.post("http://localhost:8080/api/perpor/updatespor",this.$qs.stringify(this.upDate)).then(rs=>{
+            this.upForm=false;
+            location.reload();
+          }).catch(er=>console.log(er));
         },
         //新增的方法
         saveForm:function () {
