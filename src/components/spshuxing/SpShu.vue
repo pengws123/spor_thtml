@@ -175,6 +175,13 @@
           this.param.size = size;
           this.queryDate();
         },
+        //删除的方法
+        dele:function(index,row){
+          var url="http://localhost:8080/api/perpor/delspoper?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            location.reload();
+          }).catch(er=>console.log(er))
+        },
         //新增的方法
         saveForm:function () {
           this.$refs['addData'].validate(res=>{
