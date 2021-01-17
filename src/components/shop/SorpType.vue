@@ -101,7 +101,7 @@
       //遍历赋值
       queryDate:function () {
         for (let i = 0; i <this.ajaxDate.length ; i++) {
-          if(this.ajaxDate[i].pid==-1){
+          if(this.ajaxDate[i].pid==0){
             this.diguiNode(this.ajaxDate[i]);
             break;
           }

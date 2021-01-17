@@ -39,7 +39,7 @@
         label="图片">
         <template slot-scope="scope">
           <!-- <img src="192.168.1.43:8080/imgFiless/f86a6cd6-a0e3-47a6-ba03-62a68ff41c99.gif"/>-->
-          <img width="50px" :src="'http://'+scope.row.imgpath"/>
+          <img width="50px" :src="scope.row.imgpath"/>
         </template>
       </el-table-column>
 
@@ -211,6 +211,7 @@
         },
         //图片
         imgCallBack:function(response, file, fileList){
+
           this.addData.imgpath=response.data;
           this.upDate.imgpath=response.data;
         },

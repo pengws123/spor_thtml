@@ -275,7 +275,7 @@
           this.$ajax.get("http://localhost:8080/api/type/getData").then(res => {
             this.typeData = res.data.data;
             for (let i = 0; i < res.data.data.length; i++) {
-              if (res.data.data[i].pid == -1) {
+              if (res.data.data[i].pid ==0) {
                 this.diguiNode(res.data.data[i]);
                 break;
               }
