@@ -10,7 +10,7 @@
 
       <el-form-item>
         <el-button type="primary" @click="queryDate()">查询</el-button>
-        <el-button type="success" @click="addForm=true">新增</el-button>
+        <el-button type="success" @click="adda()">新增</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -181,7 +181,8 @@
             upForm:false,
             //新增的对象
             addData:{
-              name:""
+              name:"",
+              imgpath:""
             },
             //修改的对象
             upDate:{
@@ -222,6 +223,13 @@
             this.quydate=rs.data.data.list;
             this.count=rs.data.data.count;
           }).catch(er=>console.log(er))
+        },
+        //新增的弹框
+        adda:function(){
+          this.addForm=true;
+          this.addData={
+            imgpath:"",
+          };
         },
         //新增的方法
         saveForm:function () {
