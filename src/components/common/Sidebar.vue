@@ -71,8 +71,8 @@ export default {
                     title: '分类管理'
                   },
                   {
-                    index: 'SsType',
-                    title: '分类管理2'
+                    index: 'Shangpin',
+                    title: '商品管理'
                   }
                   ,
                   {

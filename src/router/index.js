@@ -28,9 +28,9 @@ export default new Router({
           meta: { title: '分类管理' }
         },
         ,{
-          path: '/SsType',
-          component: () => import(/* webpackChunkName: "dashboard" */ '../components/shop/SsType.vue'),
-          meta: { title: '分类管理2' }
+          path: '/Shangpin',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/shangpin/shangpin.vue'),
+          meta: { title: '商品管理' }
         }
         ,{
           path: '/Spname',
