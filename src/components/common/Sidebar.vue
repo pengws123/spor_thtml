@@ -72,7 +72,7 @@ export default {
                   },
                   {
                     index: 'Shangpin',
-                    title: '商品管理'
+                    title: '商品新增'
                   }
                   ,
                   {

@@ -61,7 +61,7 @@
         <template slot-scope="scope">
           <el-button size="mini" class="el-icon-edit" @click="showupdate(scope.$index,scope.row)">编辑</el-button>
           <el-button size="mini" class="el-icon-delete-solid"  @click="dele(scope.$index,scope.row)">删除</el-button>
-          <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.$index,scope.row)">维护属性值</el-button>
+          <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护属性值</el-button>
         </template>
       </el-table-column>
 
@@ -232,7 +232,7 @@
   <!--新增属性值模板-->
   <div>
     <el-dialog :title="this.sxname+'新增信息'" :visible.sync="addsxForm">
-      <el-form :model="addsxdate" :rules="rule" ref="addsxdate"  label-width="80px">
+      <el-form :model="addsxdate" ref="addsxdate"  label-width="80px">
 
         <el-form-item label="中文名称" prop="nameCH">
           <el-col :span="11">
@@ -259,7 +259,7 @@
   <!--修改属性值模板-->
   <div>
     <el-dialog :title="this.sxname+'修改信息'" :visible.sync="upsxForm">
-      <el-form :model="upsxdate" :rules="rule" ref="upsxdate" label-width="80px">
+      <el-form :model="upsxdate"  ref="upsxdate" label-width="80px">
 
         <el-form-item label="中文名称" prop="nameCH">
           <el-col :span="11">
@@ -378,7 +378,7 @@
       },
       methods: {
           //查询属性值的弹框
-        xigsu:function(index,row){
+        xigsu:function(row){
           this.pid=row.id;
           this.sxname=row.nameCH;
           this.ShuForm=true;
@@ -399,15 +399,11 @@
         },
         //新增属性值的提交
         savesxForm:function(){
-          this.$refs['addsxdate'].validate(res=>{
-            if(res==true){
               this.addsxdate.attId=this.pid;
               this.$ajax.post("http://localhost:8080/api/sxvalue/savexvalue",this.$qs.stringify(this.addsxdate)).then(rs=>{
                 this.upForm=false;
                 location.reload();
               }).catch(er=>console.log(er));
-            }
-          });
         },
         //修改属性值的弹框
         showupdatesx:function(index,row){
@@ -419,20 +415,16 @@
         },
         //修改属性值的弹框
         upsxTable:function(){
-          this.$refs['upsxdate'].validate(res=>{
-            if(res==true){
               this.$ajax.post("http://localhost:8080/api/sxvalue/updatexvalue",this.$qs.stringify(this.upsxdate)).then(rs=>{
                 this.upForm=false;
                 location.reload();
               }).catch(er=>console.log(er))
-            }
-          })
         },
         //删除属性值的方法
         delet:function(index,row){
           var url="http://localhost:8080/api/sxvalue/delxvalue?id="+row.id;
           this.$ajax.post(url).then(rs=>{
-            location.reload();
+            this.queryDate();
           }).catch(er=>console.log(er))
         },
         //第几页
@@ -448,7 +440,7 @@
         dele:function(index,row){
           var url="http://localhost:8080/api/perpor/delspoper?id="+row.id;
           this.$ajax.post(url).then(rs=>{
-            location.reload();
+            this.queryDate();
           }).catch(er=>console.log(er))
         },
         //修改的弹框
@@ -465,7 +457,7 @@
             if(res==true){
               this.$ajax.post("http://localhost:8080/api/perpor/updatespor",this.$qs.stringify(this.upDate)).then(rs=>{
                 this.upForm=false;
-                location.reload();
+                this.queryDate();
               }).catch(er=>console.log(er))
             }
           })
@@ -482,7 +474,7 @@
               console.log(this.addData)
               this.$ajax.post("http://localhost:8080/api/perpor/savespoper",this.$qs.stringify(this.addData)).then(rs=>{
                 this.addForm=false;
-                location.reload();
+                this.queryDate();
               }).catch(er=>console.log(er));
             }
           });
@@ -508,7 +500,7 @@
               this.diguiNode(this.types[i]);
               //   a/b/c/f/d/e
               //给name重新赋值
-              this.types[i].name=this.typeName.split("/").reverse().join("/").indexOf("/");
+              this.types[i].name=this.typeName.split("/").reverse().join("/").substr(0,this.typeName.length-1);
             }
 
           }).catch(err => console.log(err));
@@ -551,7 +543,8 @@
         formaTypeId(row,column,value,index){
           for (let i = 0; i <this.typeData.length; i++) {
             if(value==this.typeData[i].id)
-            {return this.typeData[i].name}
+            {return this.typeData[i].name.substr(this.typeData[i].name.lastIndexOf("/")+1)
+            }
           }
         },
         //处理属性sku的类型
