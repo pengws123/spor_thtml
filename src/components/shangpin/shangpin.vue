@@ -54,7 +54,10 @@
           </el-form-item>
         </el-form>
       </div>
+
+
       <div class="info" v-if="active==2">
+
         <el-form :model="addData"  ref="addData"  label-width="80px">
 
           <el-form-item label="属性类型" prop="typeId">
@@ -126,7 +129,7 @@
               </el-radio-group>
 
 
-              <el-checkbox-group v-if="a.type==2" v-model="fuxuan">
+              <el-checkbox-group v-if="a.type==2" v-model="a.ckValues">
                 <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH" name="type"></el-checkbox>
               </el-checkbox-group>
 
@@ -136,12 +139,10 @@
 
           </el-form-item>
 
-        <!--  <el-form-item >
-            <el-button type="primary" class="el-icon-check" @click="saveForm">确 定</el-button>
-            <el-button @click="addForm = false" class="el-icon-close">取 消</el-button>
-          </el-form-item>-->
           <el-button type="primary" @click="addProduct">添加</el-button>
         </el-form>
+
+
       </div>
       <div class="info" v-if="active==3">
         商品提交
