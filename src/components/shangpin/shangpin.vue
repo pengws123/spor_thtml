@@ -18,8 +18,8 @@
             <el-input v-model="shopAdd.title" style="width: 200px"></el-input>
           </el-form-item>
 
-          <el-form-item label="品牌" prop="brandId">
-            <el-select v-model="shopAdd.brandId" placeholder="请选择分类">
+          <el-form-item label="品牌" prop="bandId">
+            <el-select v-model="shopAdd.bandId" placeholder="请选择分类">
               <el-option v-for="item in BrandData" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
@@ -72,8 +72,6 @@
 
             <el-form-item v-for="a in  SKUData" :key="a.id" :label="a.nameCH">
 
-
-
               <el-checkbox-group v-if="a.type==2" v-model="a.ckValues" @change="skuChange">
                 <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH"></el-checkbox>
               </el-checkbox-group>
@@ -85,15 +83,6 @@
           </el-form-item>
 
 
-
-
-          <!--<el-form-item v-if="tableShow"  label="选择规格" prop="name">
-            <el-form-item v-for="a in  skuCK"  :label="a[0]">
-            <el-checkbox-group v-for="b in skuCK" :label="b[0][1]">
-
-            </el-checkbox-group>
-                </el-form-item>
-          </el-form-item>-->
           <el-table
             v-if="tableShow"
             :data="tableData"
@@ -107,7 +96,7 @@
               width="180">
 
               <template slot-scope="scope">
-                <el-input/>
+                <el-input  v-model="scope.row.kucun"/>
               </template>
 
             </el-table-column>
@@ -115,7 +104,7 @@
               label="价格"
               width="180">
               <template slot-scope="scope">
-                <el-input/>
+                <el-input v-model="scope.row.jiage"/>
               </template>
             </el-table-column>
           </el-table>
@@ -125,19 +114,19 @@
             <el-form-item v-for="a in  attData" :key="a.id" :label="a.nameCH">
 
               <!--  0 下拉框     1 单选框      2  复选框   3  输入框  -->
-              <el-input v-if="a.type==3" v-model="shophui.nameaa"></el-input>
+              <el-input v-if="a.type==3" v-model="a.ckValues"></el-input>
 
 
-              <el-select v-if="a.type==0" v-model="shophui.xiala"  placeholder="请选择">
-                <el-option  v-for="b in a.values" :key="b.id"  :label="b.nameCH" :value="b.id"></el-option>
+              <el-select v-if="a.type==0" v-model="a.ckValues"  placeholder="请选择">
+                <el-option  v-for="b in a.values" :key="b.id"  :label="b.nameCH" :value="b.nameCH"></el-option>
               </el-select>
 
-              <el-radio-group v-if="a.type==1" v-model="shophui.type">
-                <el-radio v-for="b in a.values" :key="b.id" :label="b.id">{{b.nameCH}}</el-radio>
+              <el-radio-group v-if="a.type==1" v-model="a.ckValues">
+                <el-radio v-for="b in a.values"  :key="b.id" :label="b.nameCH"></el-radio>
               </el-radio-group>
 
 
-              <el-checkbox-group v-if="a.type==2" v-model="shophui.fuxuan">
+              <el-checkbox-group v-if="a.type==2" v-model="fuxuan">
                 <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH" name="type"></el-checkbox>
               </el-checkbox-group>
 
@@ -151,7 +140,7 @@
             <el-button type="primary" class="el-icon-check" @click="saveForm">确 定</el-button>
             <el-button @click="addForm = false" class="el-icon-close">取 消</el-button>
           </el-form-item>-->
-
+          <el-button type="primary" @click="addProduct">添加</el-button>
         </el-form>
       </div>
       <div class="info" v-if="active==3">
@@ -168,15 +157,21 @@
         name: "shangpin",
       data (){
             return{
+              //规格
               tableShow:false,
+              //移动的下标
               active: 1,
+              //新增的对象
               shopAdd:{},
-              shophui:{
-                fuxuan:[]
+              //新增规格
+              saveAdd:{
               },
+                fuxuan:[],
+              //属性的数组
               BrandData:{},
               //获取类型的数据
               typeData:[],
+              //递规类型
               types:[],
               //递归拼接处理
               typeName:"",
@@ -187,14 +182,31 @@
               SKUData:[],
               //属性值对象
               attData:[],
+              //规格的table
               tableData:[], //确定sku复选框绑定的变量名
+              //动态表头
               cols:[]
             }
       },
       methods: {
-
+          //新增提交
+        addProduct:function(){
+        this.shopAdd.perporId=this.addData.typeId;
+          console.log(this.attData);
+        let arrt=[];
+          for (let i = 0; i <this.attData.length ; i++) {
+          let  attData={};
+            attData[this.attData[i].name]=this.attData[i].ckValues;
+            arrt.push(attData);
+          }
+          this.shopAdd.attr=JSON.stringify(arrt);
+          this.shopAdd.sku=JSON.stringify(this.tableData);
+          this.$ajax.post("http://localhost:8080/api/pin/savesshangpin",this.$qs.stringify(this.shopAdd)).then(res=>{
+            this.$message.success("添加成功");
+          })
+        },
+        //笛卡尔积
         discarts:function() {
-          //笛卡尔积
           var twodDscartes = function (a, b) {
             var ret = [];
             for (var i = 0; i < a.length; i++) {
@@ -234,27 +246,33 @@
           this.cols=[];
           this.tableData=[];
           //判断是否要生成笛卡尔积
-          var ccc=[];
+          var dika=[];
           let flag=true;
           for (let i = 0; i <this.SKUData.length ; i++) {
         this.cols.push({"id":this.SKUData[i].id,"nameCH":this.SKUData[i].nameCH,"name":this.SKUData[i].name});
         //console.log(this.cols)
-            ccc.push(this.SKUData[i].ckValues);
+            dika.push(this.SKUData[i].ckValues);
             if(this.SKUData[i].ckValues.length==0){
               flag=false;
               break;
             }
           }
           if(flag==true){
-
-          let  ss = this.discarts(ccc);
+          let  ss = this.discarts(dika);
             for (let i = 0; i <ss.length; i++) {
               let  zhi= ss[i];
               let  tableValue={};
-              for (let j = 0; j <zhi.length; j++) {
-                let key=this.cols[j].name;
-                console.log(key)
-                tableValue[key]=zhi[j];
+              if(typeof zhi=="object") {
+                for (let j = 0; j < zhi.length; j++) {
+                  let key = this.cols[j].name;
+                  //  console.log(key)
+                  tableValue[key] = zhi[j];
+                }
+              }else {
+                let key = this.cols[0].name;
+                //  console.log(key)
+                tableValue[key] = zhi;
+
               }
               this.tableData.push(tableValue);
               //console.log(this.tableData);
@@ -290,6 +308,7 @@
               if(attrDatas[i].isSKU==2){
 
                 if(attrDatas[i].type!=3){
+                  attrDatas[i].ckValues=[];
                   //发起请求 查询此属性对应的选项值
                   this.$ajax.get("http://localhost:8080/api/sxvalue/querysxvalue?attId="+attrDatas[i].id).then(res=>{
                     attrDatas[i].values=res.data.data;
@@ -307,7 +326,7 @@
                     attrDatas[i].ckValues=[];
 
                     this.SKUData.push(attrDatas[i]);
-                    console.log(this.SKUData);
+                  //  console.log(this.SKUData);
                   })
                 }
                 else {
@@ -321,7 +340,7 @@
             this.attData=[];
           }
         })
-          console.log(this.attData);
+        //  console.log(this.attData);
         },
         //查询类型的方法
         queryType: function () {
