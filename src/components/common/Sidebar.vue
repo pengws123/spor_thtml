@@ -82,6 +82,10 @@ export default {
                   {
                     index: 'Spshu',
                     title: '商品属性'
+                  },
+                  {
+                    index: 'shangquery',
+                    title: '商品查询'
                   }
                   ]
               },

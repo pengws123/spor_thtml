@@ -30,12 +30,17 @@ export default new Router({
         ,{
           path: '/Shangpin',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/shangpin/shangpin.vue'),
-          meta: { title: '商品管理' }
+          meta: { title: '商品新增' }
         }
         ,{
           path: '/Spname',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/spname/spname.vue'),
           meta: { title: '商品管理' }
+        }
+        ,{
+          path: '/shangquery',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/shangquery/shangquery.vue'),
+          meta: { title: '' }
         }
         ,{
           path: '/Spshu',

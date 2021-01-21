@@ -203,6 +203,8 @@
           this.shopAdd.sku=JSON.stringify(this.tableData);
           this.$ajax.post("http://localhost:8080/api/pin/savesshangpin",this.$qs.stringify(this.shopAdd)).then(res=>{
             this.$message.success("添加成功");
+            this.$router.push("/shangquery");
+            location.reload();
           })
         },
         //笛卡尔积

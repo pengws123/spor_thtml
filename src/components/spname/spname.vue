@@ -38,7 +38,6 @@
         prop="imgpath"
         label="图片">
         <template slot-scope="scope">
-          <!-- <img src="192.168.1.43:8080/imgFiless/f86a6cd6-a0e3-47a6-ba03-62a68ff41c99.gif"/>-->
           <img width="50px" :src="scope.row.imgpath"/>
         </template>
       </el-table-column>
@@ -61,8 +60,8 @@
       </el-table-column>
 
     </el-table>
-    <el-pagination
 
+    <el-pagination
       @current-change="handleCurrentChange"
       @size-change="handleSizeChange"
       :page-sizes="param.sizes"

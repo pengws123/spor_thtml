@@ -1,5 +1,5 @@
 <template>
-<div>
+<div align="center">
   <h1>属性展示</h1>
   <div id="searchDiv" align="center">
 
