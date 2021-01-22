@@ -305,8 +305,8 @@
             param:{
               name:"",
               //分页数据
-              sizes:[2,3,5],
-              size:2,
+              sizes:[5,10,15],
+              size:5,
               start:1
             },
             //属性的查询弹框

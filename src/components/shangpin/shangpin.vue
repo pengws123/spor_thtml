@@ -209,38 +209,19 @@
           })
         },
         //笛卡尔积
-        discarts:function() {
-          var twodDscartes = function (a, b) {
-            var ret = [];
-            for (var i = 0; i < a.length; i++) {
-              for (var j = 0; j < b.length; j++) {
-                ret.push(ft(a[i], b[j]));
-              }
-            }
-            return ret;
-          }
-          var ft = function (a, b) {
-            if (!(a instanceof Array))
-              a = [a];
-            var ret = a.slice(0);
-            ret.push(b);
-            return ret;
-          }
-          //多个一起做笛卡尔积
-          return (function (data) {
-            var len = data.length;
-            if (len == 0)
-              return [];
-            else if (len == 1)
-              return data[0];
-            else {
-              var r = data[0];
-              for (var i = 1; i < len; i++) {
-                r = twodDscartes(r, data[i]);
-              }
-              return r;
-            }
-          })(arguments.length > 1 ? arguments : arguments[0]);
+        calcDescartes:function(array) {
+          if (array.length < 2) return array[0] || [];
+          return [].reduce.call(array, function (col, set) {
+            var res = [];
+            col.forEach(function (c) {
+              set.forEach(function (s) {
+                var t = [].concat(Array.isArray(c) ? c : [c]);
+                t.push(s);
+                res.push(t);
+              })
+            });
+            return res;
+          });
         },
         //监听sku属性 改变事件
         skuChange:function(){
@@ -261,7 +242,7 @@
             }
           }
           if(flag==true){
-          let  ss = this.discarts(dika);
+          let  ss = this.calcDescartes(dika);
             for (let i = 0; i <ss.length; i++) {
               let  zhi= ss[i];
               let  tableValue={};

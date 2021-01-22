@@ -31,7 +31,7 @@
 
     <el-table-column label="属性类型" prop="perporId"  align="center">
       <template slot-scope="scope">
-      <el-button mini  @click="xiugai(scope.row.id)">点击查看</el-button>
+      <el-button mini  @click="xiugai(scope.row.perporId,scope.row.id)">点击查看</el-button>
       </template>
     </el-table-column>
 
@@ -40,7 +40,7 @@
     </el-table-column>
 
     <el-table-column
-      align="center">
+      align="center" label="操作">
       <!--  <template slot="header" slot-scope="scope">
          <el-input
            v-model="search"
@@ -165,11 +165,11 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="SKUData.length>0" label="商品规格">
+        <el-form-item v-if="SKUData.length>0" label="商品规格" >
 
           <el-form-item v-for="a in  SKUData" :key="a.id" :label="a.nameCH">
 
-            <el-checkbox-group v-if="a.type==2" v-model="a.ckValues" @change="skuChange">
+              <el-checkbox-group v-if="a.type==2" v-model="a.ckValues" @change="skuChange">
               <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH"></el-checkbox>
             </el-checkbox-group>
 
@@ -299,39 +299,97 @@
         this.queryType();
       },
       methods:{
+        //修改属性值的弹框
+        xiugai:function(typeId,id){
+          this.upFormType=true;
+          this.addData.typeId=typeId;
+          this.getAttrData2(typeId,id);
+        this.skuChange();
+
+        },
+        //第几页
+        handleCurrentChange:function(page){ //页数
+          this.param.start=page;
+          this.queryShuxing();
+          //每页条数
+        },handleSizeChange:function(size){ //条数
+          this.param.size=size;
+          this.queryShuxing();
+        },
+        //修改的弹框
+        showupdate:function(row){
+          this.upForm=true;
+          var url="http://localhost:8080/api/pin/selectshangpin?id="+row;
+          this.$ajax.post(url).then(rs=>{
+            this.upDate=rs.data.data;
+          }).catch(er=>console.log(er))
+        },
+        //修改提交
+        updateForm:function(){
+          this.$ajax.post("http://localhost:8080/api/pin/updateshangpin",this.$qs.stringify(this.upDate)).then(rs=>{
+            this.upForm=false;
+            this.queryShuxing();
+          }).catch(er=>console.log(er));
+        },
+        //新增
+        adda:function(){
+          this.$router.push("/Shangpin");
+        },
+        //删除的方法
+        dele:function(row){
+          this.$ajax.get("http://localhost:8080/api/pin/delshangpin?id="+row).then(rs=>{
+            this.queryShuxing();
+          }).catch(er=>console.log(er));
+        },
+        //图片
+        imgCallBack:function(response, file, fileList){
+          this.upDate.imgPath=response.data;
+        },
+        //取消的弹框的方法
+        quxiao:function(){
+          this.upForm=false;
+        },
+        //查询的方法
+        queryShuxing:function () {
+          var par=this.$qs.stringify(this.param);
+          var url="http://localhost:8080/api/pin/queryShang?"+par;
+          this.$ajax.get(url).then(rs=>{
+            this.queryData=rs.data.data.list;
+            // console.log(this.queryData);
+            this.count=rs.data.data.count;
+          }).catch(er=>console.log(er))
+        },
+        //查询  商品的内容
+        queryDate:function () {
+          let param={start:1,size:100000000};
+          var par=this.$qs.stringify(param);
+          var url="http://localhost:8080/api/name/queryspname?"+par;
+          this.$ajax.get(url).then(rs=>{
+            this.BrandData=rs.data.data.list;
+          }).catch(er=>console.log(er))
+        },
+        //出来品牌名字
+        formaBand(row,column,value,index) {
+          for (let i = 0; i <this.BrandData.length; i++) {
+            if(value==this.BrandData[i].id)
+            {return this.BrandData[i].name
+            }
+          }
+        },
         //笛卡尔积
-        discarts:function() {
-          var twodDscartes = function (a, b) {
-            var ret = [];
-            for (var i = 0; i < a.length; i++) {
-              for (var j = 0; j < b.length; j++) {
-                ret.push(ft(a[i], b[j]));
-              }
-            }
-            return ret;
-          }
-          var ft = function (a, b) {
-            if (!(a instanceof Array))
-              a = [a];
-            var ret = a.slice(0);
-            ret.push(b);
-            return ret;
-          }
-          //多个一起做笛卡尔积
-          return (function (data) {
-            var len = data.length;
-            if (len == 0)
-              return [];
-            else if (len == 1)
-              return data[0];
-            else {
-              var r = data[0];
-              for (var i = 1; i < len; i++) {
-                r = twodDscartes(r, data[i]);
-              }
-              return r;
-            }
-          })(arguments.length > 1 ? arguments : arguments[0]);
+        calcDescartes:function(array) {
+          if (array.length < 2) return array[0] || [];
+          return [].reduce.call(array, function (col, set) {
+            var res = [];
+            col.forEach(function (c) {
+              set.forEach(function (s) {
+                var t = [].concat(Array.isArray(c) ? c : [c]);
+                t.push(s);
+                res.push(t);
+              })
+            });
+            return res;
+          });
         },
         //监听sku属性 改变事件
         skuChange:function(){
@@ -352,7 +410,7 @@
             }
           }
           if(flag==true){
-            let  ss = this.discarts(dika);
+            let  ss = this.calcDescartes(dika);
             for (let i = 0; i <ss.length; i++) {
               let  zhi= ss[i];
               let  tableValue={};
@@ -374,6 +432,80 @@
           }
           this.tableShow=flag;
         }, //初始化商品属性
+        getAttrData2:function(typeId,id){
+          this.$ajax.get("http://localhost:8080/api/pin/selectByPerId?proId="+id).then(rs=>{
+              let datas=rs.data.data;
+          // console.log(typeId);
+          this.SKUData=[];
+          this.attData=[];
+          this.$ajax.get("http://localhost:8080/api/perpor/queryByTypeID?typeId="+typeId).then(res=>{
+            // 所有的属性数据
+            let attrDatas=res.data.data;
+            //判断分类是否有数据   更新 参数和规格
+            if(attrDatas.length>0){
+              //初始化  attData      SKUData
+              for (let i = 0; i <attrDatas.length ; i++) {
+                //判断是否为sku属性
+                if(attrDatas[i].isSKU==2){
+
+                  if(attrDatas[i].type!=3){
+                    //回显
+                    if(attrDatas[i].type==2){
+                      if(this.getValeu(attrDatas[i].name,datas)==""){
+                        attrDatas[i].ckValues=[];
+                      }else{
+                        attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                      }
+                    }else{
+                      attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                    }
+                    //发起请求 查询此属性对应的选项值
+                    this.$ajax.get("http://localhost:8080/api/sxvalue/querysxvalue?attId="+attrDatas[i].id).then(res=>{
+                      attrDatas[i].values=res.data.data;
+                      this.attData.push(attrDatas[i]);
+                    })
+                  }else {
+                    attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                    this.attData.push(attrDatas[i]);
+                  }
+                }else{
+                  if(attrDatas[i].type!=3){
+                    //回显
+                    if(attrDatas[i].type==2){
+                      if(this.getValeu(attrDatas[i].name,datas)==""){
+                        attrDatas[i].ckValues=[];
+                      }else{
+                        attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                      }
+                    }else{
+                      attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                    }
+
+                    //发起请求 查询此属性对应的选项值
+                    this.$ajax.get("http://localhost:8080/api/sxvalue/querysxvalue?attId="+attrDatas[i].id).then(res=>{
+                      attrDatas[i].values=res.data.data;
+
+                      //attrDatas[i].ckValues=[];
+                      attrDatas[i].ckValues=this.getValeu(attrDatas[i].name,datas);
+                      this.SKUData.push(attrDatas[i]);
+                      //  console.log(this.SKUData);
+                    })
+                  }
+                  else {
+                    attrDatas[i].ckValues=[];
+                    this.attData.push(attrDatas[i]);
+                  }
+                }
+              }
+            }else{
+              this.SKUData=[];
+              this.attData=[];
+            }
+          })
+          })
+          //  console.log(this.attData);
+        },
+        //初始化商品属性
         getAttrData:function(typeId){
           // console.log(typeId);
           this.SKUData=[];
@@ -422,6 +554,25 @@
             }
           })
           //  console.log(this.attData);
+        },
+        //data 回显数据   [{},{}]
+        getValeu:function(key,data){
+          let  arrTable=[];
+          for (let i = 0; i <data.length ; i++) {
+            //得到一个数据 将字符串转为json
+            let  objData=JSON.parse(data[i].attrData);
+            if(objData[key]!=null){
+              if(data[i].storcks!=null){
+              if(arrTable.indexOf(objData[key])==-1){
+                arrTable.push(objData[key]);
+                console.log(arrTable);
+              }
+              }else {
+              return objData[key];
+              }
+            }
+          }
+          return arrTable;
         },
         //查询类型的方法
         queryType: function () {
@@ -473,83 +624,7 @@
           if(rs==true){
             this.types.push(node);
           }
-        },
-          //修改属性值的弹框
-        xiugai:function(row){
-          this.upFormType=true;
-          this.$ajax.get("http://localhost:8080/api/pin/selectByPerId?proId="+row).then(rs=>{
-          this.queryPro=rs.data.data;
-          console.log(this.queryPro);
-          }).catch(er=>console.log(er));
-        },
-        //第几页
-        handleCurrentChange:function(page){ //页数
-          this.param.start=page;
-          this.queryShuxing();
-          //每页条数
-        },handleSizeChange:function(size){ //条数
-          this.param.size=size;
-          this.queryShuxing();
-        },
-        //修改的弹框
-        showupdate:function(row){
-          this.upForm=true;
-          var url="http://localhost:8080/api/pin/selectshangpin?id="+row;
-          this.$ajax.post(url).then(rs=>{
-            this.upDate=rs.data.data;
-          }).catch(er=>console.log(er))
-        },
-        //修改提交
-        updateForm:function(){
-          this.$ajax.post("http://localhost:8080/api/pin/updateshangpin",this.$qs.stringify(this.upDate)).then(rs=>{
-            this.upForm=false;
-          this.queryShuxing();
-          }).catch(er=>console.log(er));
-        },
-        //新增
-        adda:function(){
-          this.$router.push("/Shangpin");
-        },
-        //删除的方法
-        dele:function(row){
-          this.$ajax.get("http://localhost:8080/api/pin/delshangpin?id="+row).then(rs=>{
-            this.queryShuxing();
-          }).catch(er=>console.log(er));
-        },
-        //图片
-        imgCallBack:function(response, file, fileList){
-          this.upDate.imgPath=response.data;
-        },
-        //取消的弹框的方法
-        quxiao:function(){
-          this.upForm=false;
-        },
-        //查询的方法
-        queryShuxing:function () {
-          var par=this.$qs.stringify(this.param);
-          var url="http://localhost:8080/api/pin/queryShang?"+par;
-          this.$ajax.get(url).then(rs=>{
-            this.queryData=rs.data.data.list;
-           // console.log(this.queryData);
-            this.count=rs.data.data.count;
-          }).catch(er=>console.log(er))
-        },
-        //查询  商品的内容
-        queryDate:function () {
-          let param={start:1,size:100000000};
-          var par=this.$qs.stringify(param);
-          var url="http://localhost:8080/api/name/queryspname?"+par;
-          this.$ajax.get(url).then(rs=>{
-            this.BrandData=rs.data.data.list;
-          }).catch(er=>console.log(er))
-      },
-        //出来品牌名字
-        formaBand(row,column,value,index) {
-          for (let i = 0; i <this.BrandData.length; i++) {
-            if(value==this.BrandData[i].id)
-            {return this.BrandData[i].name
-            }
-          }
+
         }
       }
     }
