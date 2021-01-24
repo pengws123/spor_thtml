@@ -55,7 +55,7 @@
       return {
         collapse: false,
         fullscreen: false,
-        name: 'admin',
+        name: '老刘',
         message: "9999999+"
       };
     },

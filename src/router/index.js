@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/common/Home'
-import Header from '@/components/common/Header'
-import Left from '@/components/common/Sidebar'
-import Tag from '@/components/common/Tags'
-import Test from '@/components/Test'
+import vHead from '@/components/common/Header'
+import vSidebar from '@/components/common/Sidebar'
+import vTags from '@/components/common/Tags'
 Vue.use(Router)
+
 
 export default new Router({
   routes: [

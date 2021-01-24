@@ -121,7 +121,7 @@
 
 
               <el-select v-if="a.type==0" v-model="a.ckValues"  placeholder="请选择">
-                <el-option  v-for="b in a.values" :key="b.id"  :label="b.nameCH" :value="b.nameCH"></el-option>
+                <el-option  v-for="b in a.values" :key="b.id"  :label="b.nameCH" :value="b.id"></el-option>
               </el-select>
 
               <el-radio-group v-if="a.type==1" v-model="a.ckValues">
@@ -129,7 +129,7 @@
               </el-radio-group>
 
 
-              <el-checkbox-group v-if="a.type==2" v-model="a.ckValues">
+              <el-checkbox-group v-if="a.type==2" v-model="a.ckValues" @change="$forceUpdate()">
                 <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH" name="type"></el-checkbox>
               </el-checkbox-group>
 
@@ -346,10 +346,13 @@
               this.SKUData[i].ckValues=[];
             }
             this.attData=res.data.data.attrDatas;
+            debugger;
             for (let i = 0; i <this.attData.length ; i++) {
               if(this.attData[i].type==2){
               this.attData[i].ckValues=[];
+
             }
+
             }
           })
         },

@@ -10,7 +10,7 @@
     </ul>
     <div class="tags-close-box">
       <el-dropdown @command="handleTags">
-        <el-button size="mini" type="danger">
+        <el-button size="mini" type="primary">
           标签选项<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu size="small" slot="dropdown">
@@ -27,7 +27,7 @@
   export default {
     data() {
       return {
-        tagsList: ['系统首页']
+        tagsList: []
       }
     },
     methods: {
