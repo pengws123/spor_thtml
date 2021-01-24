@@ -8,13 +8,13 @@
       </el-steps>
       <!-- 个人信息 -->
       <div class="info" v-if="active==1">
-        <el-form ref="shopAdd" :model="shopAdd" label-width="80px">
+        <el-form ref="shopAdd" :rules="rule"  :model="shopAdd" label-width="80px">
 
-          <el-form-item label="商品名称">
+          <el-form-item label="商品名称" prop="name">
             <el-input v-model="shopAdd.name" style="width: 200px"></el-input>
           </el-form-item>
 
-          <el-form-item label="商品标题">
+          <el-form-item label="商品标题" prop="title">
             <el-input v-model="shopAdd.title" style="width: 200px"></el-input>
           </el-form-item>
 
@@ -37,20 +37,20 @@
             </el-upload>
           </el-form-item>
 
-          <el-form-item label="商品介绍">
+          <el-form-item label="商品介绍" prop="productdecs">
             <el-input type="textarea" style="width: 200px"  v-model="shopAdd.productdecs"></el-input>
           </el-form-item>
 
-          <el-form-item label="商品价格">
-            <el-input v-model="shopAdd.price" style="width: 200px"></el-input>
+          <el-form-item label="商品价格" prop="price">
+            <el-input-number v-model="shopAdd.price"  :step="1" :min="0" :max="1000"></el-input-number>
           </el-form-item>
 
-          <el-form-item label="商品库存">
-            <el-input v-model="shopAdd.stocks" style="width: 200px"></el-input>
+          <el-form-item label="商品库存" prop="stocks">
+            <el-input-number v-model="shopAdd.stocks"  :step="1" :min="0" :max="1000"></el-input-number>
           </el-form-item>
 
-          <el-form-item label="排序字段">
-            <el-input v-model="shopAdd.sortNum" style="width: 200px"></el-input>
+          <el-form-item label="排序字段" prop="sortNum">
+            <el-input-number v-model="shopAdd.sortNum"  :step="1" :min="0" :max="1000"></el-input-number>
           </el-form-item>
         </el-form>
       </div>
@@ -58,12 +58,12 @@
 
       <div class="info" v-if="active==2">
 
-        <el-form :model="addData"  ref="addData"  label-width="80px">
+        <el-form :model="shopAdd"  ref="addData"  label-width="80px">
 
           <el-form-item label="属性类型" prop="typeId">
-            <el-select v-model="addData.typeId" placeholder="请选择" @change="getAttrData">
+            <el-select v-model="shopAdd.typeId" placeholder="请选择" @change="getAttrData">
               <el-option
-                v-for="item in types"
+                v-for="item in typeData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id">
@@ -157,6 +157,39 @@
     export default {
         name: "shangpin",
       data (){
+
+        var checkname = (rule, value, callback) => {
+          if (!value) {
+            return callback(new Error('属性名不能为空'));
+          }
+          if(/^[\u4e00-\u9fa5]+$/i.test(value)){
+            callback();
+          }else{
+            callback(new Error('只能输入中文'));
+          }
+        };
+        var  ckPrice=(rule,value,callback)=>{ // 自定义规则  要求的函数参数为三个     第二个是验证的值  第三个回调函数（返回的值）
+          if(value<=3){
+            callback(new Error("不能小于0.30"));
+          }else{
+            callback();
+          }
+
+        };var  ckstocks=(rule,value,callback)=>{ // 自定义规则  要求的函数参数为三个     第二个是验证的值  第三个回调函数（返回的值）
+          if(value<=30){
+            callback(new Error("不能小于30"));
+          }else{
+            callback();
+          }
+
+        };var  cksortNum=(rule,value,callback)=>{ // 自定义规则  要求的函数参数为三个     第二个是验证的值  第三个回调函数（返回的值）
+          if(value<=300){
+            callback(new Error("不能小于300"));
+          }else{
+            callback();
+          }
+
+        }
             return{
               //规格
               tableShow:false,
@@ -164,10 +197,6 @@
               active: 1,
               //新增的对象
               shopAdd:{},
-              //新增规格
-              saveAdd:{
-              },
-                fuxuan:[],
               //属性的数组
               BrandData:{},
               //获取类型的数据
@@ -176,9 +205,6 @@
               types:[],
               //递归拼接处理
               typeName:"",
-              //新增的对象
-              addData:{
-              },
               //sku属性对象
               SKUData:[],
               //属性值对象
@@ -186,14 +212,35 @@
               //规格的table
               tableData:[], //确定sku复选框绑定的变量名
               //动态表头
-              cols:[]
+              cols:[],
+              rule:{ //验证规则
+                name:[
+                  { required: true, message: '请输入属性值的名称', trigger: 'blur' },
+                  { max: 10, message: '长度不能超过 10 个字符', trigger: 'blur' },
+                  { validator:checkname,trigger: 'blur' }
+                ],
+                title: [
+                  { required: true, message: '请输入表头', trigger: 'blur' }
+                ],
+                productdecs: [
+                  { required: true, message: '请输入介绍', trigger: 'blur' }
+                ],
+                price: [
+                  {validator:ckPrice,trigger: 'change' }
+                ],
+                stocks: [
+                  {validator:ckstocks,trigger: 'change' }
+                ],
+                sortNum: [
+                  {validator:cksortNum,trigger: 'change' }
+                ],
+              }
             }
       },
       methods: {
           //新增提交
         addProduct:function(){
-        this.shopAdd.perporId=this.addData.typeId;
-          console.log(this.attData);
+
         let arrt=[];
           for (let i = 0; i <this.attData.length ; i++) {
           let  attData={};
@@ -203,9 +250,10 @@
           this.shopAdd.attr=JSON.stringify(arrt);
           this.shopAdd.sku=JSON.stringify(this.tableData);
           this.$ajax.post("http://localhost:8080/api/pin/savesshangpin",this.$qs.stringify(this.shopAdd)).then(res=>{
+            this.shopAdd={};
             this.$message.success("添加成功");
             this.$router.push("/shangquery");
-            location.reload();
+
           })
         },
         //笛卡尔积
@@ -225,7 +273,8 @@
         },
         //监听sku属性 改变事件
         skuChange:function(){
-         // console.log(this.SKUData);
+          //强制刷新组件
+          this.$forceUpdate();
           //清空动态列头
           this.cols=[];
           this.tableData=[];
@@ -265,8 +314,19 @@
           this.tableShow=flag;
         },
         //下边移动的按钮
-        next() {
+        next:async function() {
+          this.$refs['shopAdd'].validate(r=>{
+            if(r==true){
+
           if (this.active++ > 3) this.active = 1;
+            }
+          });
+          if (this.active==2){
+            if(this.typeData.length==0){
+              await this.queryType();
+            }
+          }
+
         },
         pre() {
           if (this.active-- < 2) this.active = 1;
@@ -278,119 +338,55 @@
         },
         //初始化商品属性
         getAttrData:function(typeId){
-         // console.log(typeId);
-          this.SKUData=[];
-          this.attData=[];
-        this.$ajax.get("http://localhost:8080/api/perpor/queryByTypeID?typeId="+typeId).then(res=>{
-          // 所有的属性数据
-          let attrDatas=res.data.data;
-          //判断分类是否有数据   更新 参数和规格
-          if(attrDatas.length>0){
-            //初始化  attData      SKUData
-            for (let i = 0; i <attrDatas.length ; i++) {
-              //判断是否为sku属性
-              if(attrDatas[i].isSKU==2){
+          this.$ajax.get("http://localhost:8080/api/perpor/queryByTypeIds?typeId="+typeId).then(res=>{
 
-                if(attrDatas[i].type!=3){
-                  attrDatas[i].ckValues=[];
-                  //发起请求 查询此属性对应的选项值
-                  this.$ajax.get("http://localhost:8080/api/sxvalue/querysxvalue?attId="+attrDatas[i].id).then(res=>{
-                    attrDatas[i].values=res.data.data;
-                    this.attData.push(attrDatas[i]);
-                  })
-                }else {
-                  this.attData.push(attrDatas[i]);
-                }
-              }else{
-                if(attrDatas[i].type!=3){
-                  //发起请求 查询此属性对应的选项值
-                  this.$ajax.get("http://localhost:8080/api/sxvalue/querysxvalue?attId="+attrDatas[i].id).then(res=>{
-                    attrDatas[i].values=res.data.data;
+            this.SKUData=res.data.data.skuDatas;
 
-                    attrDatas[i].ckValues=[];
-
-                    this.SKUData.push(attrDatas[i]);
-                  //  console.log(this.SKUData);
-                  })
-                }
-                else {
-                  attrDatas[i].ckValues=[];
-                  this.attData.push(attrDatas[i]);
-                }
-              }
+            for (let i = 0; i <this.SKUData.length ; i++) {
+              this.SKUData[i].ckValues=[];
             }
-          }else{
-            this.SKUData=[];
-            this.attData=[];
-          }
-        })
-        //  console.log(this.attData);
+            this.attData=res.data.data.attrDatas;
+            for (let i = 0; i <this.attData.length ; i++) {
+              if(this.attData[i].type==2){
+              this.attData[i].ckValues=[];
+            }
+            }
+          })
         },
         //查询类型的方法
-        queryType: function () {
-          this.$ajax.get("http://localhost:8080/api/type/getData").then(res => {
-            this.typeData = res.data.data;
-            this.getChildrenType();
-            //遍历所有的子节点
-            for (let i = 0; i <this.types.length ; i++) {
-              this.typeName=""; // 全局变量   临时存 层级名称
-              //处理子节点的name属性
-              this.diguiNode(this.types[i]);
-              //   a/b/c/f/d/e
-              //给name重新赋值
-              this.types[i].name=this.typeName.split("/").reverse().join("/").substr(0,this.typeName.length-1);
-            }
+        queryType:async function () {
+        let res= await  this.$ajax.get("http://localhost:8080/api/type/getData")
+            this.getChildrenType(res.data.data);
 
-          }).catch(err => console.log(err));
         },
-        diguiNode: function (node) {
-          if(node.pid!=0){ //临界值
-            this.typeName+="/"+node.name;
-            //上级节点
-            for (let i = 0; i <this.typeData.length ; i++) {
-              if(node.pid==this.typeData[i].id){
-                this.diguiNode(this.typeData[i]);
+        //循环递规
+        getChildrenType:function(datas){
+          for (let i = 0; i <datas.length ; i++) {
+            let  node=datas[i];
+            let falg=true;
+            for (let j = 0; j <datas.length  ; j++) {
+              if (node.id==datas[j].pid) {
+                falg=false;
                 break;
               }
             }
-
-          }else{
-            this.typeName+="/"+node.name;
-          }
-        },
-        getChildrenType:function(){
-          //遍历所有的节点数据
-          for (let i = 0; i <this.typeData.length ; i++) {
-            let  node=this.typeData[i];
-            this.isParent(node);
-          }
-        },
-        isParent: function (node) {
-          let rs=true; //标示
-          for (let i = 0; i <this.typeData.length ; i++) {
-            if(node.id==this.typeData[i].pid){
-              rs=false;
-              break;
+            if(falg==true){
+              this.typeData.push(node);
             }
-          }
-          if(rs==true){
-            this.types.push(node);
           }
         },
         //查询  商品的内容
-        queryDate:function () {
+        queryDate: async function () {
           let param={start:1,size:100000000};
           var par=this.$qs.stringify(param);
-          var url="http://localhost:8080/api/name/queryspname?"+par;
-          this.$ajax.get(url).then(rs=>{
-            this.BrandData=rs.data.data.list;
-          }).catch(er=>console.log(er))
+          let rs= await this.$ajax.get("http://localhost:8080/api/name/queryspname?"+par);
+           this.BrandData=rs.data.data.list;
         }
       },
       //初始化函数
-      created:function () {
-        this.queryType();
-        this.queryDate();
+      created: async function () {
+      await  this.queryType();
+        await  this.queryDate();
       }
     }
 </script>

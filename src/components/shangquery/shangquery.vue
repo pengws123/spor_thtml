@@ -3,6 +3,10 @@
   <el-button type="success" @click="adda()">新增</el-button>
   <el-table :data="queryData" style="width: 100%"  border >
 
+
+    <el-table-column label="序号" prop="id"  align="center">
+    </el-table-column>
+
     <el-table-column label="名字" prop="name"  align="center">
     </el-table-column>
 
@@ -29,9 +33,9 @@
     <el-table-column label="库存" prop="stocks"  align="center">
     </el-table-column>
 
-    <el-table-column label="属性类型" prop="perporId"  align="center">
+    <el-table-column label="属性类型" prop="typeId"  align="center">
       <template slot-scope="scope">
-      <el-button mini  @click="xiugai(scope.row.perporId,scope.row.id)">点击查看</el-button>
+      <el-button mini  @click="xiugai(scope.row.typeId,scope.row.id)">点击查看</el-button>
       </template>
     </el-table-column>
 
@@ -71,7 +75,7 @@
   <!-- 修改  -->
   <div>
     <el-dialog title="商品信息" :visible.sync="upForm">
-      <el-form :model="upDate"  ref="upDate"  label-width="80px">
+      <el-form :model="upDate" :rules="rule"  ref="upDate"  label-width="80px">
 
         <el-form-item label="名字" prop="name">
           <el-col :span="11">
@@ -152,7 +156,7 @@
   <div>
     <el-dialog title="修改商品属性信息" :visible.sync="upFormType">
 
-      <el-form :model="addData"  ref="addData"  label-width="80px">
+      <el-form :model="addData"  ref="addData" :rules="rule" label-width="80px">
 
         <el-form-item label="属性类型" prop="typeId">
           <el-select v-model="addData.typeId" placeholder="请选择" @change="getAttrData">
@@ -245,6 +249,19 @@
     export default {
         name: "shangquery",
       data(){
+
+        var checkname = (rule, value, callback) => {
+          if (!value) {
+            return callback(new Error('属性名不能为空'));
+          }
+          if(/^[\u4e00-\u9fa5]+$/i.test(value)){
+            callback();
+          }else{
+            callback(new Error('只能输入中文'));
+          }
+        };
+
+
           return{
             //修改属性值的弹框值
             upFormType:false,
@@ -289,6 +306,16 @@
             cols:[],
             //规格
             tableShow:false,
+            rule:{ //验证规则
+              nameCH:[
+                { required: true, message: '请输入属性值的名称', trigger: 'blur' },
+                { max: 10, message: '长度不能超过 10 个字符', trigger: 'blur' },
+                { validator:checkname,trigger: 'blur' }
+              ],
+              name: [
+                { required: true, message: '请输入属性值', trigger: 'change' }
+              ]
+            }
           }
       },
       created:function () {

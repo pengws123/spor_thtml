@@ -160,7 +160,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="类型:" prop="isSKU">
+        <el-form-item label="是否是sku:" prop="isSKU">
           <el-radio-group v-model="upDate.isSKU">
             <el-radio   :label="1">是</el-radio>
             <el-radio   :label="2">否</el-radio>
@@ -232,7 +232,7 @@
   <!--新增属性值模板-->
   <div>
     <el-dialog :title="this.sxname+'新增信息'" :visible.sync="addsxForm">
-      <el-form :model="addsxdate" ref="addsxdate"  label-width="80px">
+      <el-form :model="addsxdate" ref="addsxdate" :rules="rule" label-width="80px">
 
         <el-form-item label="中文名称" prop="nameCH">
           <el-col :span="11">
@@ -259,7 +259,7 @@
   <!--修改属性值模板-->
   <div>
     <el-dialog :title="this.sxname+'修改信息'" :visible.sync="upsxForm">
-      <el-form :model="upsxdate"  ref="upsxdate" label-width="80px">
+      <el-form :model="upsxdate"  ref="upsxdate" :rules="rule" label-width="80px">
 
         <el-form-item label="中文名称" prop="nameCH">
           <el-col :span="11">
@@ -424,7 +424,7 @@
         delet:function(index,row){
           var url="http://localhost:8080/api/sxvalue/delxvalue?id="+row.id;
           this.$ajax.post(url).then(rs=>{
-            this.queryDate();
+           this.queryPeor();
           }).catch(er=>console.log(er))
         },
         //第几页
@@ -448,20 +448,22 @@
           this.upForm=true;
           var url="http://localhost:8080/api/perpor/selectById?id="+row.id;
           this.$ajax.post(url).then(rs=>{
-            this.upDate=rs.data.data;
+            this.upDate.id=rs.data.data.id;
+            this.upDate.name= rs.data.data.name;
+            this.upDate.nameCH=rs.data.data.nameCH;
+            this.upDate.typeId=rs.data.data.typeId;
+            this.upDate.type=rs.data.data.type;
+            this.upDate.isSKU=rs.data.data.isSKU;
           }).catch(er=>console.log(er))
         },
         //修改提交
         updateForm:function () {
-          this.$refs['upDate'].validate(res=>{
-            if(res==true){
-              this.$ajax.post("http://localhost:8080/api/perpor/updatespor",this.$qs.stringify(this.upDate)).then(rs=>{
-                this.upForm=false;
-                this.queryDate();
-              }).catch(er=>console.log(er))
-            }
-          })
-        },
+       console.log(this.upDate)
+        this.$ajax.post("http://localhost:8080/api/perpor/updatespor",this.$qs.stringify(this.upDate)).then(rs=>{
+          this.upForm=false;
+          this.queryDate();
+        }).catch(er=>console.log(er))
+     },
         //新增的弹框
         adda:function(){
          this.addForm=true;

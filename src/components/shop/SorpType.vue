@@ -36,7 +36,7 @@
     <!--新增-->
       <el-dialog title="录入分类产品信息" :visible.sync="addFormFlag" width="500px">
 
-        <el-form :model="addForm" ref="addForm"  label-width="80px">
+        <el-form :model="addForm" ref="addForm" :rules="rule" label-width="80px">
 
           <el-form-item label="名称" prop="name">
             <el-input v-model="addForm.name" autocomplete="off" ></el-input>
@@ -54,7 +54,7 @@
     <!--修改-->
     <el-dialog title="录入分类产品信息" :visible.sync="upFormFlag" width="500px">
 
-      <el-form :model="upForm" ref="upForm"  label-width="80px">
+      <el-form :model="upForm" ref="upForm" :rules="rule"  label-width="80px">
         <el-form-item label="名称" prop="name">
           <el-input type="hidden" v-model="upForm.id" autocomplete="off" ></el-input>
           <el-input v-model="upForm.name" autocomplete="off" ></el-input>
@@ -76,6 +76,19 @@
   export default {
     name: "SorpType",
     data(){
+
+      var checkname = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('属性名不能为空'));
+        }
+        if(/^[\u4e00-\u9fa5]+$/i.test(value)){
+          callback();
+        }else{
+          callback(new Error('只能输入中文'));
+        }
+      };
+
+
       return{
         data:[],//用来渲染树
         defaultProps: {},
@@ -94,6 +107,16 @@
         delform:{
           id:""
 
+        },
+        rule:{ //验证规则
+          nameCH:[
+            { required: true, message: '请输入属性值的名称', trigger: 'blur' },
+            { max: 10, message: '长度不能超过 10 个字符', trigger: 'blur' },
+            { validator:checkname,trigger: 'blur' }
+          ],
+          name: [
+            { required: true, message: '请输入属性值', trigger: 'change' }
+          ]
         }
       }
     } ,

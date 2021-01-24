@@ -162,6 +162,20 @@
     export default {
         name: "spname",
         data(){
+
+          var checkname = (rule, value, callback) => {
+            if (!value) {
+              return callback(new Error('属性名不能为空'));
+            }
+            if(/^[\u4e00-\u9fa5]+$/i.test(value)){
+              callback();
+            }else{
+              callback(new Error('只能输入中文'));
+            }
+          };
+
+
+
           return{
             param:{
               name:"",
@@ -188,9 +202,10 @@
               name:""
             },
             rule:{ //验证规则
-              carname:[
-                { required: true, message: '请输入名称', trigger: 'blur' },
-                { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+              name:[
+                { required: true, message: '请输入商品的名称', trigger: 'blur' },
+                { max: 10, message: '长度不能超过 10 个字符', trigger: 'blur' },
+                { validator:checkname,trigger: 'blur' }
               ]
             }
           }
