@@ -10,7 +10,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect:"/Test"
+      redirect:"/login"
     },
     {
       path: '/',
@@ -47,6 +47,11 @@ export default new Router({
           meta: { title: '商品属性' }
         }
       ]
+    },
+    {
+      path: '/login',
+      component: () => import(/* webpackChunkName: "login" */ '../components/login/Login.vue'),
+      meta: { title: '登录' }
     }
   ]
 })
