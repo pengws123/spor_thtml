@@ -73,7 +73,7 @@
           <template slot-scope="scope">
             <el-button size="mini" class="el-icon-edit" @click="showupdate(scope.$index,scope.row)">编辑</el-button>
             <el-button size="mini" class="el-icon-delete-solid"  @click="dele(scope.$index,scope.row)">删除</el-button>
-            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护角色</el-button>
+            <el-button size="mini" class="el-icon-setting" @click="xigsu(scope.row.id)">维护角色</el-button>
           </template>
         </el-table-column>
 
@@ -178,6 +178,25 @@
       </div>
 
     </el-dialog>
+
+    <!-- 修改  -->
+    <el-dialog title="角色信息" :visible.sync="upjueseForm">
+      <el-form :model="addjueseData" ref="addjueseData"  label-width="80px">
+
+        <el-form-item label="角色">
+          <el-checkbox-group  v-model="addjueseData.rid" >
+            <el-checkbox v-for="b in jueseDate" :key="b.id" :label="b.id" name="type">{{b.name}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="upjueseForm = false">取 消</el-button>
+        <el-button type="primary" @click="saveForm">确 定</el-button>
+      </div>
+
+    </el-dialog>
+
   </div>
 </template>
 
@@ -192,6 +211,15 @@
             size:2,
             start:1
           },
+          //角色弹框属性
+          upjueseForm:false,
+          //角色新增的对象
+          addjueseData:{
+            uid:"",
+            rid:[],
+          },
+          //用户id
+          uid:"",
           //修改的对象
           upData:{},
           //修改信息的弹框属性
@@ -200,6 +228,8 @@
           count:0,
           //查询出来的数据
           quydate:[],
+          //角色对象
+          jueseDate:[],
           //学历下拉
           eduData:[{"value":1,"label":"高中"},{"value":2,"label":"大专"},{"value":3,"label":"本科"}],
           //部门下拉
@@ -207,6 +237,29 @@
         }
       },
       methods:{
+          //授权角色的弹框
+        xigsu:function(id){
+          this.queryjuese();
+          this.uid=id;
+          this.upjueseForm=true;
+          var url="http://localhost:8080/api/user/queryuserjue?uid="+id;
+          this.$ajax.post(url).then(rs=>{
+            this.upData =rs.data.data;
+          }).catch(er=>console.log(er))
+        },
+        //角色授权的提交
+        saveForm:function(){
+          this.addjueseData.uid=this.uid;
+          console.log(this.addjueseData)
+        },
+        //修改用户的弹框
+        showupdate:function(index,row){
+          this.upForm=true;
+          var url="http://localhost:8080/api/user/selectuser?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            this.upData =rs.data.data;
+          }).catch(er=>console.log(er))
+        },
         //修改用户的弹框
         showupdate:function(index,row){
           this.upForm=true;
@@ -250,6 +303,16 @@
             this.quydate = rs.data.data.list;
             this.count = rs.data.data.count;
           }).catch(er => console.log(er))
+        },
+        //查询角色对象
+        queryjuese:function(){
+          let param={start:1,size:100000000};
+          var par=this.$qs.stringify(param);
+          var url="http://localhost:8080/api/userjuese/queryjuese?"+par;
+          this.$ajax.get(url).then(rs=>{
+            this.jueseDate=rs.data.data.list;
+            console.log( this.jueseDate)
+          }).catch(er=>console.log(er))
         },
         //处理性别
         SEX(row,column,value,index){
