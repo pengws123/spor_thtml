@@ -118,9 +118,19 @@
               url:"",
               type:""
             },
+            delform:{
+              id:""
+            }
           }
       },
       methods:{
+          //删除
+        remove:function (node, data) {
+          this.delform.id=data.id;
+          this.$ajax.post("http://localhost:8080/api/xian/deleteshore",this.$qs.stringify(this.delform)).then(rs=>{
+            location.reload();
+          }).catch(er=>console.log(er))
+        },
         //修改的弹框
         update:function (node, data) {
           this.upFormFlag=true;
