@@ -110,6 +110,13 @@
             upDate:{},
           }
       },methods:{
+        //删除属性值的方法
+        dele:function(index,row){
+          var url="http://localhost:8080/api/userjuese/deletejuese?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            this.queryDate();
+          }).catch(er=>console.log(er))
+        },
         //修改角色的弹框
         showupdate:function(index,row){
           this.upForm=true;
