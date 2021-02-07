@@ -25,7 +25,7 @@
           <template slot-scope="scope">
             <el-button size="mini" class="el-icon-edit" @click="showupdate(scope.$index,scope.row)">编辑</el-button>
             <el-button size="mini" class="el-icon-delete-solid"  @click="dele(scope.$index,scope.row)">删除</el-button>
-            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护属性值</el-button>
+            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护权限</el-button>
           </template>
         </el-table-column>
 
@@ -61,6 +61,27 @@
       </el-dialog>
     </div>
 
+    <!--修改角色模板-->
+    <div>
+      <el-dialog title="修改角色模板" :visible.sync="upForm">
+        <el-form :model="upDate" ref="upDate"  label-width="80px">
+
+          <el-form-item label="角色名" prop="name">
+            <el-col :span="11">
+              <el-input v-model="upDate.name" autocomplete="off" label-width="100px"></el-input>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item >
+            <el-button type="primary" class="el-icon-check" @click="updateForm">确 定</el-button>
+            <el-button class="el-icon-close" @click="upForm = false">取 消</el-button>
+          </el-form-item>
+
+        </el-form>
+
+      </el-dialog>
+    </div>
+
   </div>
 </template>
 
@@ -81,10 +102,29 @@
             quydate:[],
             //新增角色弹框值
             addsxForm:false,
+            //修改角色弹框属性
+            upForm:false,
             //新增属性值弹框
             addsxdate:{},
+            //修改角色的对象
+            upDate:{},
           }
       },methods:{
+        //修改角色的弹框
+        showupdate:function(index,row){
+          this.upForm=true;
+          var url="http://localhost:8080/api/userjuese/selectjuese?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            this.upDate=rs.data.data;
+          }).catch(er=>console.log(er))
+        },
+        //修改角色提交
+        updateForm:function(){
+          this.$ajax.post("http://localhost:8080/api/userjuese/updatejuese",this.$qs.stringify(this.upDate)).then(rs=>{
+            this.upForm=false;
+            location.reload();
+          }).catch(er=>console.log(er))
+        },
         //新增属角色提交
         savesxForm:function(){
           this.$ajax.post("http://localhost:8080/api/userjuese/savejuese",this.$qs.stringify(this.addsxdate)).then(rs=>{
