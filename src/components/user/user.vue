@@ -244,13 +244,30 @@
           this.upjueseForm=true;
           var url="http://localhost:8080/api/user/queryuserjue?uid="+id;
           this.$ajax.post(url).then(rs=>{
-            this.upData =rs.data.data;
+           let juDate =rs.data.data;
+            for (let i = 0; i <juDate.length ; i++) {
+              this.addjueseData.rid.push(juDate[i].rid);
+            }
           }).catch(er=>console.log(er))
         },
         //角色授权的提交
         saveForm:function(){
           this.addjueseData.uid=this.uid;
-          console.log(this.addjueseData)
+          var rids = "";
+          if (this.addjueseData.rid.length > 0) {
+            for (let i = 0; i < this.addjueseData.rid.length; i++) {
+              rids += this.addjueseData.rid[i] + ",";
+            }
+            //处理一下 多余的，hao
+            rids = rids.substr(0, (rids.length - 1));
+          }
+          this.addjueseData.rid= rids;
+          this.$ajax.post("http://localhost:8080/api/user/saveuserjue",this.$qs.stringify(this.addjueseData)).then(rs=>{
+            this.upjueseForm=false;
+            this.queryDate();
+            this.addjueseData.uid="";
+            this.addjueseData.rid=[];
+          }).catch(er=>console.log(er));
         },
         //修改用户的弹框
         showupdate:function(index,row){
@@ -311,7 +328,6 @@
           var url="http://localhost:8080/api/userjuese/queryjuese?"+par;
           this.$ajax.get(url).then(rs=>{
             this.jueseDate=rs.data.data.list;
-            console.log( this.jueseDate)
           }).catch(er=>console.log(er))
         },
         //处理性别
