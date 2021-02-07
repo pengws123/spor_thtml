@@ -174,7 +174,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addForm = false">取 消</el-button>
-       <!-- <el-button type="primary" @click="saveForm">确 定</el-button>-->
+        <el-button type="primary" @click="updateForm">确 定</el-button>
       </div>
 
     </el-dialog>
@@ -214,6 +214,13 @@
           this.$ajax.post(url).then(rs=>{
             this.upData =rs.data.data;
           }).catch(er=>console.log(er))
+        },
+        //修改提交
+        updateForm:function(){
+          this.$ajax.post("http://localhost:8080/api/user/updateuser",this.$qs.stringify(this.upData)).then(rs=>{
+            this.upForm=false;
+            this.queryDate();
+          }).catch(er=>console.log(er));
         },
         //删除用户的方法
         dele:function(index,row){
