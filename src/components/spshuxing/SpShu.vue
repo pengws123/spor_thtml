@@ -401,7 +401,7 @@
         savesxForm:function(){
               this.addsxdate.attId=this.pid;
               this.$ajax.post("http://localhost:8080/api/sxvalue/savexvalue",this.$qs.stringify(this.addsxdate)).then(rs=>{
-                this.upForm=false;
+                this.addsxForm=false;
                 location.reload();
               }).catch(er=>console.log(er));
         },

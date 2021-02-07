@@ -40,6 +40,26 @@
       </el-pagination>
     </div>
 
+    <!--新增角色模板-->
+    <div>
+      <el-dialog title="新增角色模板" :visible.sync="addsxForm">
+        <el-form :model="addsxdate" ref="addsxdate"  label-width="80px">
+
+          <el-form-item label="角色名" prop="name">
+            <el-col :span="11">
+              <el-input v-model="addsxdate.name" autocomplete="off" label-width="100px"></el-input>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item >
+            <el-button type="primary" class="el-icon-check" @click="savesxForm">确 定</el-button>
+            <el-button class="el-icon-close" @click="addsxForm = false">取 消</el-button>
+          </el-form-item>
+
+        </el-form>
+
+      </el-dialog>
+    </div>
 
   </div>
 </template>
@@ -59,8 +79,24 @@
             count:0,
             //查询出来的数据
             quydate:[],
+            //新增角色弹框值
+            addsxForm:false,
+            //新增属性值弹框
+            addsxdate:{},
           }
       },methods:{
+        //新增属角色提交
+        savesxForm:function(){
+          this.$ajax.post("http://localhost:8080/api/userjuese/savejuese",this.$qs.stringify(this.addsxdate)).then(rs=>{
+            this.addsxForm=false;
+            location.reload();
+          }).catch(er=>console.log(er));
+        },
+        //新增属性值的弹框
+        adda:function(){
+          this.addsxForm=true;
+          this.addsxdate={};
+        },
         //第几页
         handleCurrentChange: function (page) { //页数
           this.param.start = page;
