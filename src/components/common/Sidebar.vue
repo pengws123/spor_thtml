@@ -86,6 +86,18 @@ export default {
                   {
                     index: 'shangquery',
                     title: '商品查询'
+                  },
+                  {
+                    index: 'User',
+                    title: '用户信息'
+                  },
+                  {
+                    index: 'Userquan',
+                    title: '用户权限'
+                  },
+                  {
+                    index: 'Userjuese',
+                    title: '用户角色'
                   }
                   ]
               },

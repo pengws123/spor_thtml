@@ -46,6 +46,21 @@ export default new Router({
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/spshuxing/SpShu.vue'),
           meta: { title: '商品属性' }
         }
+        ,{
+          path: '/User',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/user/user.vue'),
+          meta: { title: '用户信息' }
+        }
+        ,{
+          path: '/Userquan',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/userquan/userquan.vue'),
+          meta: { title: '用户权限' }
+        }
+        ,{
+          path: '/Userjuese',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/userjuese/userjuese.vue'),
+          meta: { title: '用户角色' }
+        }
       ]
     },
     {
