@@ -161,12 +161,12 @@
             this.quydate = rs.data.data.list;
             this.count = rs.data.data.count;
           }).catch(er => console.log(er))
-        },
+        }
       },
       //初始化函数
       created:function () {
         this.queryDate();
-      },
+      }
     }
 </script>
 
