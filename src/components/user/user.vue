@@ -73,7 +73,7 @@
           <template slot-scope="scope">
             <el-button size="mini" class="el-icon-edit" @click="showupdate(scope.$index,scope.row)">编辑</el-button>
             <el-button size="mini" class="el-icon-delete-solid"  @click="dele(scope.$index,scope.row)">删除</el-button>
-            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护权限</el-button>
+            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护角色</el-button>
           </template>
         </el-table-column>
 
@@ -110,6 +110,13 @@
         }
       },
       methods:{
+        //删除用户的方法
+        dele:function(index,row){
+          var url="http://localhost:8080/api/user/deleteuser?id="+row.id;
+          this.$ajax.post(url).then(rs=>{
+            this.queryDate();
+          }).catch(er=>console.log(er))
+        },
         //第几页
         handleCurrentChange: function (page) { //页数
           this.param.start = page;
