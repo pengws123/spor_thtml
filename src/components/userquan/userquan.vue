@@ -176,7 +176,7 @@
           var isPar=this.isPared(obj);
           if(isPar==true){
             let co=0;
-            this.jsonstr+='{"id":'+obj.id+',"pid":'+obj.pid+',"label":'+obj.name+',"url":"'+obj.url+'","type":'+obj.type+',"children":[';
+            this.jsonstr+='{"id":'+obj.id+',"pid":'+obj.pid+',"label":"'+obj.name+'","url":"'+obj.url+'","type":'+obj.type+',"children":[';
             for (let i = 0; i <this.ajaxDate.length ; i++) {
               if(obj.id==this.ajaxDate[i].pid){
                 co++;
@@ -208,6 +208,7 @@
       created:function () {
         this.$ajax.get("http://localhost:8080/api/xian/getshore").then(rs=>{
           this.ajaxDate=rs.data.data;
+          console.log(this.ajaxDate)
           this.queryDate();
         }).catch(er=>console.log(er))
       }

@@ -161,16 +161,14 @@ export default {
                   this.$ajax.post("http://localhost:8080/api/user/loginuser",this.$qs.stringify(this.param)).then(res=>{
                     if (res.data.data.mags==1){
                       this.$message.success('登录成功');
-                      localStorage.setItem('ms_username', this.param.realName);
+                      window.sessionStorage.setItem("user",JSON.stringify({"name":this.param.realName,"token":res.data.data.data}));
                       this.$router.push('/test');
                     }
                     if (res.data.data.mags==2){
                       this.$message.success('密码不正确');
-                      localStorage.setItem('ms_username', this.param.realName);
                     }
                     if (res.data.data.mags==3){
                       this.$message.success('账号不存在');
-                      localStorage.setItem('ms_username', this.param.realName);
                     }
                   })
                 } else {
@@ -203,7 +201,6 @@ export default {
               }
               if (rs.data.data.mags==2){
                 this.$message.success('账号已存在');
-                localStorage.setItem('ms_username', this.param.realName);
               }
             }).catch(er=>console.log(er));
           }

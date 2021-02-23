@@ -25,7 +25,7 @@
           <template slot-scope="scope">
             <el-button size="mini" class="el-icon-edit" @click="showupdate(scope.$index,scope.row)">编辑</el-button>
             <el-button size="mini" class="el-icon-delete-solid"  @click="dele(scope.$index,scope.row)">删除</el-button>
-            <el-button size="mini" class="el-icon-setting" v-if="scope.row.type!=3" @click="xigsu(scope.row)">维护权限</el-button>
+            <el-button size="mini" class="el-icon-setting"  @click="xigsu(scope.row)">维护权限</el-button>
           </template>
         </el-table-column>
 
@@ -82,6 +82,25 @@
       </el-dialog>
     </div>
 
+    <!--新增角色权限模板-->
+    <div>
+      <el-dialog title="角色权限模板" :visible.sync="addquForm">
+
+          <el-tree
+            :data="data"
+            :props="defaultProps"
+            accordion
+            show-checkbox
+            :expand-on-click-node="false"
+          >
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+      </span>
+          </el-tree>
+
+      </el-dialog>
+    </div>
+
   </div>
 </template>
 
@@ -92,8 +111,8 @@
           return{
             param:{
               //分页数据
-              sizes:[5,10,15],
-              size:5,
+              sizes:[2,10,15],
+              size:2,
               start:1
             },
             //总条数
@@ -102,6 +121,14 @@
             quydate:[],
             //新增角色弹框值
             addsxForm:false,
+            //新增角色权限弹框值
+            addquForm:false,
+            data:[],//用来渲染树
+            ajaxDate:[],//用来接收后台传来的值
+            jsonstr:"",//用来 放进行拼接的值
+            //选中权限的数组
+            addqudate:[],
+            defaultProps: {},
             //修改角色弹框属性
             upForm:false,
             //新增属性值弹框
@@ -161,10 +188,59 @@
             this.quydate = rs.data.data.list;
             this.count = rs.data.data.count;
           }).catch(er => console.log(er))
-        }
+        },
+        xigsu:function(){
+          this.addquForm=true;
+        },
+        //遍历赋值
+        queryDates:function () {
+          for (let i = 0; i <this.ajaxDate.length ; i++) {
+            if(this.ajaxDate[i].pid==0){
+              this.diguiNode(this.ajaxDate[i]);
+              break;
+            }
+          }
+          this.data.push(JSON.parse(this.jsonstr))
+        },
+        //递规进行循环
+        diguiNode:function(obj){
+          var isPar=this.isPared(obj);
+          if(isPar==true){
+            let co=0;
+            this.jsonstr+='{"id":'+obj.id+',"pid":'+obj.pid+',"label":"'+obj.name+'","url":"'+obj.url+'","type":'+obj.type+',"children":[';
+            for (let i = 0; i <this.ajaxDate.length ; i++) {
+              if(obj.id==this.ajaxDate[i].pid){
+                co++;
+                this.diguiNode(this.ajaxDate[i]);
+                this.jsonstr+=",";
+              }
+            }
+            if(co!=0){
+              this.jsonstr=this.jsonstr.substr(0,this.jsonstr.length-1);
+            }
+            this.jsonstr+=']}';
+          }else {
+            this.jsonstr+='{"id":'+obj.id+',"pid":'+obj.pid+',"label":"'+obj.name+'","url":"'+obj.url+'","type":'+obj.type+'}';
+          }
+
+        },
+        //判断是不是父节点
+        isPared:function(obj){
+          for (let i = 0; i <this.ajaxDate.length ; i++) {
+            if(obj.id==this.ajaxDate[i].pid){
+              return true;
+            }
+          }
+          return false;
+        },
       },
       //初始化函数
       created:function () {
+        this.$ajax.get("http://localhost:8080/api/xian/getshore").then(rs=>{
+          this.ajaxDate=rs.data.data;
+          console.log(this.ajaxDate)
+          this.queryDates();
+        }).catch(er=>console.log(er))
         this.queryDate();
       }
     }
